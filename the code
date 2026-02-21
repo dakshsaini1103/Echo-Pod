@@ -1,0 +1,63 @@
+// --------- SENSOR 1 (X direction - Front) ----------
+#define TRIG1 5
+#define ECHO1 18
+
+// --------- SENSOR 2 (Y direction - Left/Right) -----
+#define TRIG2 17
+#define ECHO2 19
+
+// --------- SENSOR 3 (Z direction - Up/Down) --------
+#define TRIG3 16
+#define ECHO3 21
+
+long duration;
+float distance;
+
+float getDistance(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH, 30000); // timeout = 30ms
+
+  if (duration == 0) return -1;  // no object detected
+
+  distance = (duration * 0.034) / 2;
+  return distance;
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(TRIG1, OUTPUT);
+  pinMode(ECHO1, INPUT);
+
+  pinMode(TRIG2, OUTPUT);
+  pinMode(ECHO2, INPUT);
+
+  pinMode(TRIG3, OUTPUT);
+  pinMode(ECHO3, INPUT);
+}
+
+void loop() {
+  float xDist = getDistance(TRIG1, ECHO1);
+  float yDist = getDistance(TRIG2, ECHO2);
+  float zDist = getDistance(TRIG3, ECHO3);
+
+  Serial.print("X (Front): ");
+  Serial.print(xDist);
+  Serial.print(" cm | ");
+
+  Serial.print("Y (Side): ");
+  Serial.print(yDist);
+  Serial.print(" cm | ");
+
+  Serial.print("Z (Up/Down): ");
+  Serial.print(zDist);
+  Serial.println(" cm");
+
+  delay(500);
+}
